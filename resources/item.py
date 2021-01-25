@@ -21,7 +21,6 @@ class Item(Resource):
         item = ItemModel.find_by_name(name)
         if item:
             return item.json()
-        # The below is a tuple
         return {'message': 'Item not found'}, 404
 
     def post(self, name):
@@ -30,7 +29,6 @@ class Item(Resource):
 
         data = Item.parser.parse_args()
 
-        # item = ItemModel(name, data['price'], data['store_id'])
         item = ItemModel(name, **data)
 
         try:
@@ -47,32 +45,17 @@ class Item(Resource):
 
         return {'message': 'Item deleted'}
 
-        # Code from sqlite3
-        # connection = sqlite3.connect('data.db')
-        # cursor = connection.cursor()
-        #
-        # query = "DELETE FROM items WHERE name=?"
-        # cursor.execute(query, (name,))
-        #
-        # connection.commit()
-        # connection.close()
-        #
-        # return {'message': 'Item deleted'}
-
     def put(self, name):
         data = Item.parser.parse_args()
 
         item = ItemModel.find_by_name(name)
-        # updated_item = ItemModel(name, data['price'])
 
         if item is None:
             item = ItemModel(name, **data)
-            # item = ItemModel(name, data['price'], data['store_id'])
         else:
             item.price = data['price']
             item.store_id = data['store_id']
 
-        # 'item' is uniquely identified by 'id', so if the item exists it will just update it else insert.
         item.save_to_db()
 
         return item.json()
@@ -81,18 +64,3 @@ class Item(Resource):
 class ItemList(Resource):
     def get(self):
         return {'items': [item.json() for item in ItemModel.query.all()]}
-        # return {'items': list(map(lambda x: x.json(), ItemModel.query.all()))}
-
-        # Code for Sqlite3
-        # connection = sqlite3.connect('data.db')
-        # cursor = connection.cursor()
-        #
-        # query = "SELECT * FROM items"
-        # result = cursor.execute(query)
-        # items = []
-        # for row in result:
-        #     items.append({'name': row[0], 'price': row[1]})
-        #
-        # connection.close()
-        #
-        # return {'items': items}
