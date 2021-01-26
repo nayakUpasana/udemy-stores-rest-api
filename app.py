@@ -1,3 +1,6 @@
+# We import os to be able to read the environment variable
+import os
+
 from flask import Flask
 from flask_restful import Api
 from flask_jwt import JWT
@@ -10,8 +13,10 @@ from resources.store import Store, StoreList
 from db import db
 
 app = Flask(__name__)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+# This will do one of the following depending on our need:
+# Ask the operating system for the environment variable, Heroku's DATABASE_URL, when testing on the server
+# OR use sqlite when working or testing on our local machine
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'moon'
